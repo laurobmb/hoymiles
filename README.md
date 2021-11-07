@@ -8,3 +8,8 @@
         -e link='https://global.hoymiles.com/platform/login' \
         --name hoymiles \
         quay.io/lagomes/hoymiles:latest
+
+# References
+
+* [bot API telegram](https://core.telegram.org/bots)
+* [Lib python](https://python-telegram-bot.org/)
