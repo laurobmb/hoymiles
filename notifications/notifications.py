@@ -25,15 +25,6 @@ class sistemasolar():
         
     def testsolar(self,LINK,USER,PASSWORD):
         self.browser.get(LINK)
-
-        ##### pagina de manutenção
-        time.sleep(3)
-        python_button = self.browser.find_elements_by_xpath(
-            '/html/body/div[2]/div/div[2]/div/div[2]/div[3]/div/button')[0]
-        python_button.click()
-        time.sleep(3)
-        ##### pagina de manutenção
-
         python_button = self.browser.find_elements_by_xpath('//*[@id="name"]')[0]
         python_button.click()
         python_button.send_keys(USER)
