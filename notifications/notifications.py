@@ -34,16 +34,19 @@ class sistemasolar():
         python_button.send_keys(PASSWORD)
         python_button = self.browser.find_elements_by_xpath(
                 '/html/body/div[1]/div[2]/div[3]/form/div[3]/div/div/span/button')[0]
-        python_button.click()
+        self.browser.execute_script("arguments[0].click();", python_button)
         time.sleep(10)
 
         EnergyToday = self.browser.find_elements_by_xpath(
-            "/html/body/section/section/main/div/div/div/div/div/div/div/div/div/div[2]/div/div[1]/div[1]/div/div/div[2]/div/div[2]/ul/li[2]/b")[0]
-
+            "/html/body/section/section/main/div/div/div/div/div/div/div/div/div/div[2]/div/div/div[1]/div[1]/div[2]/div/div[2]/div/ul/li[1]/b")[0]
+        
         EnergyThisMonth = self.browser.find_elements_by_xpath(
-            "/html/body/section/section/main/div/div/div/div/div/div/div/div/div/div[2]/div/div[1]/div[1]/div/div/div[2]/div/div[2]/ul/li[3]/b")[0]
+            "/html/body/section/section/main/div/div/div/div/div/div/div/div/div/div[2]/div/div/div[1]/div[1]/div[2]/div/div[2]/div/ul/li[2]/b")[0]
 
-        return EnergyToday.text,EnergyThisMonth.text
+        EnergyThisYear = self.browser.find_elements_by_xpath(
+            "/html/body/section/section/main/div/div/div/div/div/div/div/div/div/div[2]/div/div/div[1]/div[1]/div[2]/div/div[2]/div/ul/li[3]/b")[0]
+
+        return EnergyToday,EnergyThisMonth,EnergyThisYear
 
     def tearDown(self):
         self.browser.quit()
@@ -51,9 +54,9 @@ class sistemasolar():
 
 def hoymiles(link,usuario,senha):
     main = sistemasolar()
-    EnergyToday,EnergyThisMonth = main.testsolar(link,usuario,senha)
+    EnergyToday,EnergyThisMonth,EnergyThisYear = main.testsolar(link,usuario,senha)
     main.tearDown()
-    return EnergyToday,EnergyThisMonth
+    return EnergyToday,EnergyThisMonth,EnergyThisYear
 
 def telegram_bot_sendtext(TOKEN,CHAT_ID,bot_message,USER):
     bot_token = TOKEN
@@ -73,6 +76,6 @@ if __name__ == '__main__':
     link = os.environ['LINK']
     usuario = os.environ['USUARIO']
     senha = os.environ['SENHA']
-    EnergyToday,EnergyThisMonth = hoymiles(link,usuario,senha)
-    text = usuario+': Total de energia de hoje: '+EnergyToday+' Total de energia do mes: '+EnergyThisMonth
+    EnergyToday,EnergyThisMonth,EnergyThisYear = hoymiles(link,usuario,senha)
+    text = usuario+': Total de energia de hoje: '+EnergyToday+' Total de energia do mes: '+EnergyThisMonth+' Total de enegia no ano: '+EnergyThisYear
     telegram_bot_sendtext(bot_token,bot_chatID,text,usuario)
