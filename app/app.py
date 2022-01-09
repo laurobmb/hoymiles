@@ -29,12 +29,15 @@ class sistemasolar():
         time.sleep(10)
 
         EnergyToday = self.browser.find_elements_by_xpath(
-            "/html/body/section/section/main/div/div/div/div/div/div/div/div/div/div[2]/div/div[1]/div[1]/div/div/div[2]/div/div[2]/ul/li[2]/b")[0]
-
+            "/html/body/section/section/main/div/div/div/div/div/div/div/div/div/div[2]/div/div/div[1]/div[1]/div[2]/div/div[2]/div/ul/li[1]/b")[0]
+        
         EnergyThisMonth = self.browser.find_elements_by_xpath(
-            "/html/body/section/section/main/div/div/div/div/div/div/div/div/div/div[2]/div/div[1]/div[1]/div/div/div[2]/div/div[2]/ul/li[3]/b")[0]
+            "/html/body/section/section/main/div/div/div/div/div/div/div/div/div/div[2]/div/div/div[1]/div[1]/div[2]/div/div[2]/div/ul/li[2]/b")[0]
 
-        return EnergyToday,EnergyThisMonth
+        EnergyThisYear = self.browser.find_elements_by_xpath(
+            "/html/body/section/section/main/div/div/div/div/div/div/div/div/div/div[2]/div/div/div[1]/div[1]/div[2]/div/div[2]/div/ul/li[3]/b")[0]
+
+        return EnergyToday,EnergyThisMonth,EnergyThisYear
 
     def tearDown(self):
         self.browser.quit()
@@ -44,8 +47,9 @@ if __name__ == '__main__':
     usuario = os.environ['usuario']
     senha = os.environ['senha']
     main = sistemasolar()
-    EnergyToday,EnergyThisMonth = main.testsolar(link,usuario,senha)
+    EnergyToday,EnergyThisMonth,EnergyThisYear = main.testsolar(link,usuario,senha)
     print('Total de energia de hoje:',EnergyToday.text)
     print('Total de energia do mes:',EnergyThisMonth.text)
+    print('Total de energia do mes:',EnergyThisYear.text)
     main.tearDown()
 
