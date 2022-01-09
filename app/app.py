@@ -25,7 +25,8 @@ class sistemasolar():
         python_button.send_keys(PASSWORD)
         python_button = self.browser.find_elements_by_xpath(
                 '/html/body/div[1]/div[2]/div[3]/form/div[3]/div/div/span/button')[0]
-        python_button.click()
+        #python_button.click()
+        self.browser.execute_script("arguments[0].click();", python_button)
         time.sleep(10)
 
         EnergyToday = self.browser.find_elements_by_xpath(
