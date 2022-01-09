@@ -46,7 +46,7 @@ class sistemasolar():
         EnergyThisYear = self.browser.find_elements_by_xpath(
             "/html/body/section/section/main/div/div/div/div/div/div/div/div/div/div[2]/div/div/div[1]/div[1]/div[2]/div/div[2]/div/ul/li[3]/b")[0]
 
-        return EnergyToday,EnergyThisMonth,EnergyThisYear
+        return EnergyToday.text,EnergyThisMonth.text,EnergyThisYear.text
 
     def tearDown(self):
         self.browser.quit()
@@ -77,5 +77,7 @@ if __name__ == '__main__':
     usuario = os.environ['USUARIO']
     senha = os.environ['SENHA']
     EnergyToday,EnergyThisMonth,EnergyThisYear = hoymiles(link,usuario,senha)
+    #print(EnergyToday,EnergyThisMonth,EnergyThisYear)
     text = usuario+': Total de energia de hoje: '+EnergyToday+' Total de energia do mes: '+EnergyThisMonth+' Total de enegia no ano: '+EnergyThisYear
+    #print(text)
     telegram_bot_sendtext(bot_token,bot_chatID,text,usuario)

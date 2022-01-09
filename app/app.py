@@ -44,13 +44,13 @@ class sistemasolar():
         self.browser.quit()
 
 if __name__ == '__main__':
-    link = os.environ['link']
-    usuario = os.environ['usuario']
-    senha = os.environ['senha']
+    link = os.environ['LINK']
+    usuario = os.environ['USUARIO']
+    senha = os.environ['SENHA']
     main = sistemasolar()
     EnergyToday,EnergyThisMonth,EnergyThisYear = main.testsolar(link,usuario,senha)
     print('Total de energia de hoje:',EnergyToday.text)
     print('Total de energia do mes:',EnergyThisMonth.text)
-    print('Total de energia do mes:',EnergyThisYear.text)
+    print('Total de energia do ano:',EnergyThisYear.text)
     main.tearDown()
 
