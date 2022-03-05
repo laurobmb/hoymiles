@@ -78,6 +78,6 @@ if __name__ == '__main__':
     senha = os.environ['SENHA']
     EnergyToday,EnergyThisMonth,EnergyThisYear = hoymiles(link,usuario,senha)
     #print(EnergyToday,EnergyThisMonth,EnergyThisYear)
-    text = usuario+': Total de energia de hoje: '+EnergyToday+' Total de energia do mes: '+EnergyThisMonth+' Total de enegia no ano: '+EnergyThisYear
+    text = usuario+': Total de energia de hoje: '+EnergyToday+'\n Total de energia do mes: '+EnergyThisMonth+'\n Total de enegia no ano: '+EnergyThisYear
     #print(text)
     telegram_bot_sendtext(bot_token,bot_chatID,text,usuario)
