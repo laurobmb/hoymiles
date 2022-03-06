@@ -25,7 +25,6 @@ class sistemasolar():
         python_button.send_keys(PASSWORD)
         python_button = self.browser.find_elements_by_xpath(
                 '/html/body/div[1]/div[2]/div[3]/form/div[3]/div/div/span/button')[0]
-        #python_button.click()
         self.browser.execute_script("arguments[0].click();", python_button)
         time.sleep(10)
 
@@ -38,7 +37,7 @@ class sistemasolar():
         EnergyThisYear = self.browser.find_elements_by_xpath(
             "/html/body/section/section/main/div/div/div/div/div/div/div/div/div/div[2]/div/div/div[1]/div[1]/div[2]/div/div[2]/div/ul/li[3]/b")[0]
 
-        return EnergyToday,EnergyThisMonth,EnergyThisYear
+        return EnergyToday.text,EnergyThisMonth.text,EnergyThisYear.text
 
     def tearDown(self):
         self.browser.quit()
@@ -49,8 +48,8 @@ if __name__ == '__main__':
     senha = os.environ['SENHA']
     main = sistemasolar()
     EnergyToday,EnergyThisMonth,EnergyThisYear = main.testsolar(link,usuario,senha)
-    print('Total de energia de hoje:',EnergyToday.text)
-    print('Total de energia do mes:',EnergyThisMonth.text)
-    print('Total de energia do ano:',EnergyThisYear.text)
+    print('Total de energia de hoje:',EnergyToday)
+    print('Total de energia do mes:',EnergyThisMonth)
+    print('Total de energia do ano:',EnergyThisYear)
     main.tearDown()
 
