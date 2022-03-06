@@ -71,7 +71,6 @@ def telegram_bot_sendtext(TOKEN,CHAT_ID,bot_message,USER,DEBUG):
     resposta = json.loads(resposta)
     if DEBUG == '1':
         print(resposta)
-        #{"ok":false,"error_code":401,"description":"Unauthorized"}
     error_code = resposta['ok']
     if error_code:
         logger.info("SUCCESS: GRUPO: {} USER: {} MESSAGE: {}".format(bot_chatID,USER,bot_message,))
@@ -88,6 +87,13 @@ if __name__ == '__main__':
     usuario = os.environ['USUARIO']
     senha = os.environ['SENHA']
     DEBUG = os.environ['DEBUG']
+    if DEBUG == '1':
+        print('TOKEN ->',bot_token)
+        print('CHAT_ID->',bot_chatID)
+        print('LINK->',link)
+        print('USUARIO->',usuario)
+        print('SENHA->',senha)
+        print('DEBUG->',DEBUG)
     EnergyToday,EnergyThisMonth,EnergyThisYear = hoymiles(link,usuario,senha)
     if DEBUG == '1':
         print(EnergyToday,EnergyThisMonth,EnergyThisYear)
