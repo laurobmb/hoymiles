@@ -80,4 +80,7 @@ if __name__ == '__main__':
     #print(EnergyToday,EnergyThisMonth,EnergyThisYear)
     text = 'Dados de '+usuario+':\n Total de energia de hoje: '+EnergyToday+'\n Total de energia do mes: '+EnergyThisMonth+'\n Total de enegia no ano: '+EnergyThisYear
     #print(text)
-    telegram_bot_sendtext(bot_token,bot_chatID,text,usuario)
+    try:
+        telegram_bot_sendtext(bot_token,bot_chatID,text,usuario)
+    except:
+        print("erro ao enviar msg ->",e)
