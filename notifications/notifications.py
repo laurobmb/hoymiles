@@ -81,7 +81,6 @@ def telegram_bot_sendtext(TOKEN,CHAT_ID,bot_message,USER,DEBUG):
         return 'Error'
 
 
-
 if __name__ == '__main__':
     bot_token = os.environ['TOKEN']
     bot_chatID = os.environ['CHAT_ID']
