@@ -1,4 +1,4 @@
-# hoymilessolar
+# Hoymiles Solar
 
 ### Run command
 
