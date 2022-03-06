@@ -87,6 +87,7 @@ if __name__ == '__main__':
     usuario = os.environ['USUARIO']
     senha = os.environ['SENHA']
     DEBUG = os.environ['DEBUG']
+
     if DEBUG == '1':
         print('TOKEN ->',bot_token)
         print('CHAT_ID->',bot_chatID)
@@ -94,12 +95,17 @@ if __name__ == '__main__':
         print('USUARIO->',usuario)
         print('SENHA->',senha)
         print('DEBUG->',DEBUG)
+
     EnergyToday,EnergyThisMonth,EnergyThisYear = hoymiles(link,usuario,senha)
+
     if DEBUG == '1':
         print(EnergyToday,EnergyThisMonth,EnergyThisYear)
+
     text = 'Dados de '+usuario+':\nHoje: '+EnergyToday+'\nMes: '+EnergyThisMonth+'\nAno: '+EnergyThisYear
+
     if DEBUG == '1':
         print(text)
+
     try:
         telegram_bot_sendtext(bot_token,bot_chatID,text,usuario,DEBUG)
     except:
