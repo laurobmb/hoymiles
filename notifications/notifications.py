@@ -1,7 +1,7 @@
 import requests
 import logging.config
 from selenium import webdriver
-import time, os
+import time, os, json
 
 fmt = ('%(asctime)s: %(threadName)s: %(name)s: %(levelname)s: %(message)s')
 
@@ -56,19 +56,31 @@ def hoymiles(link,usuario,senha):
     main = sistemasolar()
     EnergyToday,EnergyThisMonth,EnergyThisYear = main.testsolar(link,usuario,senha)
     main.tearDown()
+    logger.info("SUCCESS: TODAY: {} MONTH: {} YEAR: {}".format(EnergyToday,EnergyThisMonth,EnergyThisYear,))
     return EnergyToday,EnergyThisMonth,EnergyThisYear
 
-def telegram_bot_sendtext(TOKEN,CHAT_ID,bot_message,USER):
+
+def telegram_bot_sendtext(TOKEN,CHAT_ID,bot_message,USER,DEBUG):
     bot_token = TOKEN
     bot_chatID = CHAT_ID
-    send_text = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message
-    try:
-        response = requests.get(send_text)
-        logger.info("GRUPO: {} USER: {} MESSAGE: {} SUCCESS".format(bot_chatID,USER,bot_message,))
-    except:
-        logger.info("GRUPO: {} USER: {} MESSAGE: {} Failed".format(bot_chatID,USER,bot_message,))
+    send_url = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message
+    if DEBUG == '1':
+        print(send_url)
+    response = requests.get(send_url)
+    resposta = response.content.decode('UTF-8')
+    resposta = json.loads(resposta)
+    if DEBUG == '1':
+        print(resposta)
+        #{"ok":false,"error_code":401,"description":"Unauthorized"}
+    error_code = resposta['ok']
+    if error_code:
+        logger.info("SUCCESS: GRUPO: {} USER: {} MESSAGE: {}".format(bot_chatID,USER,bot_message,))
+        return response.json()     
+    else:
+        logger.info("FAILED: GRUPO: {} USER: {} MESSAGE: {}".format(bot_chatID,USER,bot_message,))
+        return 'Error'
 
-    return response.json()
+
 
 if __name__ == '__main__':
     bot_token = os.environ['TOKEN']
@@ -76,11 +88,14 @@ if __name__ == '__main__':
     link = os.environ['LINK']
     usuario = os.environ['USUARIO']
     senha = os.environ['SENHA']
+    DEBUG = os.environ['DEBUG']
     EnergyToday,EnergyThisMonth,EnergyThisYear = hoymiles(link,usuario,senha)
-    #print(EnergyToday,EnergyThisMonth,EnergyThisYear)
-    text = 'Dados de '+usuario+':\n Total de energia de hoje: '+EnergyToday+'\n Total de energia do mes: '+EnergyThisMonth+'\n Total de enegia no ano: '+EnergyThisYear
-    #print(text)
+    if DEBUG == '1':
+        print(EnergyToday,EnergyThisMonth,EnergyThisYear)
+    text = 'Dados de '+usuario+':\nHoje: '+EnergyToday+'\nMes: '+EnergyThisMonth+'\nAno: '+EnergyThisYear
+    if DEBUG == '1':
+        print(text)
     try:
-        telegram_bot_sendtext(bot_token,bot_chatID,text,usuario)
+        telegram_bot_sendtext(bot_token,bot_chatID,text,usuario,DEBUG)
     except:
-        print("erro ao enviar msg ->",e)
+        print("Erro ao enviar msg -> ")
