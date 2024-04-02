@@ -1,15 +1,23 @@
 # Tests
 
 ## Define variables
-export usuario=user1
-export senha=12345678
-export link='https://global.hoymiles.com/platform/login'
 
-## Download chromedrive
-wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
+    export USUARIO='<usuario hoymiles>
+    export SENHA='<senha hoymiles>'
+    export CHAT_ID='<chat ID>'
+    export TOKEN='<token botfather>'
+    export DEBUG='<valor de 0 para desativado e 1 para ativado>'
 
-### old version
-wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/94.0.4606.61/chromedriver_linux64.zip
+## Build Container
 
-## Unzip to path
-unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+    buildah bud -f Dockerfile -t quay.io/lagomes/hoymiles:v1
+
+## Run Container
+
+    podman run -it --name notifications --rm \
+       -e USUARIO='<usuario hoymiles> \
+       -e SENHA='<senha hoymiles>' \
+       -e CHAT_ID='<chat ID>' \
+       -e TOKEN='<token botfather>' \
+       -e DEBUG='<valor de 0 para desativado e 1 para ativado>' \
+       quay.io/lagomes/hoymiles:v1
