@@ -1,3 +1,0 @@
-playwright
-jsonpath
-requests
