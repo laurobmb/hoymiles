@@ -1,15 +1,23 @@
-# Notificacoes
+# Tests
 
-## define variables 
-    export USUARIO='your username'
-    export LINK='https://global.hoymiles.com/platform/login'
-    export SENHA='your password'
-    export CHAT_ID=-660131018
-    export TOKEN='1111111111:AAFxLoSSPIVOqZo-39o6UiLK9sMGlmWu4TA'
+## Define variables
 
-# Run
-python notifications.py
+    export USUARIO='<usuario hoymiles>
+    export SENHA='<senha hoymiles>'
+    export CHAT_ID='<chat ID>'
+    export TOKEN='<token botfather>'
+    export DEBUG='<valor de 0 para desativado e 1 para ativado>'
 
-# Run container command 
+## Build Container
 
-podman run -it --name notifications --rm -e USUARIO='your username' -e LINK='https://global.hoymiles.com/platform/login' -e SENHA='your password' -e CHAT_ID=-660131018 -e TOKEN='111111111:AAFxLoSSPIVOqZo-39o6UiLK9sMGlmWu4TA' quay.io/lagomes/hoymiles_notifications:v1
+    buildah bud -f Dockerfile -t quay.io/lagomes/hoymiles:v1
+
+## Run Container
+
+    podman run -it --name notifications --rm \
+       -e USUARIO='<usuario hoymiles> \
+       -e SENHA='<senha hoymiles>' \
+       -e CHAT_ID='<chat ID>' \
+       -e TOKEN='<token botfather>' \
+       -e DEBUG='<valor de 0 para desativado e 1 para ativado>' \
+       quay.io/lagomes/hoymiles:v1

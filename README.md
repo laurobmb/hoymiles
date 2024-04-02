@@ -2,26 +2,28 @@
 
 [![Docker Repository on Quay](https://quay.io/repository/lagomes/hoymiles_notifications/status "Docker Repository on Quay")](https://quay.io/repository/lagomes/hoymiles_notifications)
 
-### Run command
+## Define variables
 
-    docker run -it \
-        --name notifications --rm \
-        -e USUARIO='your username' \
-        -e LINK='https://global.hoymiles.com/platform/login' \
-        -e SENHA='your password' \
-        -e CHAT_ID='your chat idd' \
-        -e DEBUG=0 \
-        -e TOKEN='your token of telegram bot' \
-        quay.io/lagomes/hoymiles_notifications:main
+    export USUARIO='<usuario hoymiles>
+    export SENHA='<senha hoymiles>'
+    export CHAT_ID='<chat ID>'
+    export TOKEN='<token botfather>'
+    export DEBUG='<valor de 0 para desativado e 1 para ativado>'
 
-#### For tests
+## Build Container
 
-    podman run -it --name hoymiles \
-        --rm \
-        -e USUARIO='your username' \
-        -e LINK='https://global.hoymiles.com/platform/login' \
-        -e SENHA='your password' \
-        quay.io/lagomes/hoymiles:main
+    buildah bud -f Dockerfile -t quay.io/lagomes/hoymiles:v1
+
+## Run Container
+
+    podman run -it --name notifications --rm \
+       -e USUARIO='<usuario hoymiles> \
+       -e SENHA='<senha hoymiles>' \
+       -e CHAT_ID='<chat ID>' \
+       -e TOKEN='<token botfather>' \
+       -e DEBUG='<valor de 0 para desativado e 1 para ativado>' \
+       quay.io/lagomes/hoymiles:v1
+
 
 
 # References
