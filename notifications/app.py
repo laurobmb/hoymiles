@@ -101,7 +101,10 @@ def main():
     energy_today,energy_this_month,energy_this_year,lifetime_energy = hoymiles(hoymiles_user,hoymiles_pass)
     coleta_local = hoymiles_local()
 
-    coleta_total_de_hoje = coleta_local + float(energy_today)
+    if coleta_local == 1:
+        coleta_total_de_hoje = coleta_local + float(energy_today)
+    else:
+        coleta_total_de_hoje = 0
 
     mensagem = "Coleta de hoje: "+energy_today+" Wh"+"\nColeta do mes: "+energy_this_month+" Wh"+"\nColeta do ano: "+energy_this_year+" MWh"+"\nColeta da vida toda: "+lifetime_energy+" MWh"+"\nColeta Local: "+str(coleta_local)+" Wh"+"\n\nColeta total de hoje: "+str(coleta_total_de_hoje)
 
@@ -116,5 +119,6 @@ if __name__ == "__main__":
     bot_token = os.environ['TOKEN']
     bot_chatID = os.environ['CHAT_ID']
     debug = os.environ['DEBUG']
+    coleta_local = os.environ['COLETA_LOCAL']
 
     main()
