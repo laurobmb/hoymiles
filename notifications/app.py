@@ -17,7 +17,7 @@ def hoymiles(USER,SENHA):
         page.locator('//*[@id="password"]').fill(SENHA)
         sleep(2)
         page.locator(".submit_button").click()
-        sleep(15)
+        sleep(20)
         page.screenshot(path='screenshot.png')
 
         energy_today_selector = 'li.sx-white-space:nth-child(1) > span:nth-child(3) > b:nth-child(1)'
