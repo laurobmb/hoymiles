@@ -12,7 +12,7 @@
 
 ## Build Container
 
-    buildah bud -f Dockerfile -t quay.io/lagomes/hoymiles:v1
+    buildah bud --layers true -f Dockerfile -t quay.io/lagomes/hoymiles:v1
 
 ## Run Container
 
