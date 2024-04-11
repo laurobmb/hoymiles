@@ -99,9 +99,9 @@ def hoymiles_local():
     
 def main():
     energy_today,energy_this_month,energy_this_year,lifetime_energy = hoymiles(hoymiles_user,hoymiles_pass)
-    coleta_local = hoymiles_local()
-
+    
     if coleta_local == 1:
+        coleta_local = hoymiles_local()        
         coleta_total_de_hoje = coleta_local + float(energy_today)
     else:
         coleta_total_de_hoje = 0
