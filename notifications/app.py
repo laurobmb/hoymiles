@@ -83,42 +83,56 @@ def telegram_bot_sendtext(TOKEN,CHAT_ID,bot_message,USER,DEBUG,caption=None):
         logger.info("FAILED: GRUPO: {} USER: {} MESSAGE: {}".format(bot_chatID,USER,bot_message,))
         return 'Error'
 
-def hoymiles_local():
-    url = "http://192.168.0.107/cm?cmnd=energyyesterday"
-    response = requests.get(url)
-    if response.status_code == 200:
-        json_data = response.json()
-        today_value = json_data["EnergyYesterday"]["Today"]
-        yesterday_value = json_data["EnergyYesterday"]["Yesterday"]
-        logger.info("INFO: Coleta do dia: {} Coleta do dia anterior: {}".format(today_value,yesterday_value))
-        return today_value
+def hoymiles_local(STATUS):
+    if STATUS == 1:
+        url = "http://192.168.0.107/cm?cmnd=energyyesterday"
+        response = requests.get(url)
+        if response.status_code == 200:
+            json_data = response.json()
+            today_value = json_data["EnergyYesterday"]["Today"]
+            yesterday_value = json_data["EnergyYesterday"]["Yesterday"]
+            logger.info("INFO: Coleta do dia: {} Coleta do dia anterior: {}".format(today_value,yesterday_value))
+            return today_value
+        else:
+            logger.info("FAILED: Coleta do dia: {} Coleta do dia anterior: {}".format(today_value,yesterday_value))
+            today_value = 0
+            return today_value
     else:
-        logger.info("FAILED: Coleta do dia: {} Coleta do dia anterior: {}".format(today_value,yesterday_value))
-        today_value = 0
-        return today_value
-    
+            logger.info("INFO: Coleta local desativada")
+            today_value = 0
+            return today_value
+
 def main():
     energy_today,energy_this_month,energy_this_year,lifetime_energy = hoymiles(hoymiles_user,hoymiles_pass)
+    coleta_local = hoymiles_local(status_coleta_local)
     
-    if coleta_local == 1:
-        coleta_local = hoymiles_local()        
-        coleta_total_de_hoje = coleta_local + float(energy_today)
-    else:
-        coleta_total_de_hoje = 0
+    coleta_total_de_hoje = coleta_local + float(energy_today)
 
-    mensagem = "Coleta de hoje: "+energy_today+" Wh"+"\nColeta do mes: "+energy_this_month+" Wh"+"\nColeta do ano: "+energy_this_year+" MWh"+"\nColeta da vida toda: "+lifetime_energy+" MWh"+"\nColeta Local: "+str(coleta_local)+" Wh"+"\n\nColeta total de hoje: "+str(coleta_total_de_hoje)
+    try:
+        mensagem = "Coleta de hoje: "+energy_today+" Wh"+"\nColeta do mes: "+energy_this_month+" Wh"+"\nColeta do ano: "+energy_this_year+" MWh"+"\nColeta da vida toda: "+lifetime_energy+" MWh"+"\nColeta Local: "+str(coleta_local)+" Wh"+"\n\nColeta total de hoje: "+str(coleta_total_de_hoje)
+        telegram_bot_sendphoto(bot_token,bot_chatID)   
+        telegram_bot_sendtext(bot_token,bot_chatID,mensagem,hoymiles_user,debug)
+        logger.info("INFO: Coleta de hoje: {} Wh Coleta do mes: {} Wh Coleta do ano: {} MWh Coleta da vida toda: {} MWh Coleta Local: {} Wh Coleta total de hoje: {}".format(energy_today,energy_this_month,energy_this_year,lifetime_energy,coleta_local,coleta_total_de_hoje))
+    except:
+        logger.info("ERROR: A construcao da mensagem deu errado")
 
-    telegram_bot_sendphoto(bot_token,bot_chatID)
-    
-    telegram_bot_sendtext(bot_token,bot_chatID,mensagem,hoymiles_user,debug)
 
 if __name__ == "__main__":
-
+    versao="v3"
+    print("Coleta de energia do sistema solar <<<<<<<<<<< {}".format(versao))
     hoymiles_user = os.environ['USUARIO']
     hoymiles_pass = os.environ['SENHA']
     bot_token = os.environ['TOKEN']
     bot_chatID = os.environ['CHAT_ID']
-    debug = os.environ['DEBUG']
-    coleta_local = os.environ['COLETA_LOCAL']
+
+    if 'DEBUG' in os.environ:
+        debug = os.environ['DEBUG']
+    else:
+        debug = 0
+
+    if 'STATUS_COLETA_LOCAL' in os.environ:
+        status_coleta_local = os.environ['STATUS_COLETA_LOCAL']
+    else:
+        status_coleta_local = 0
 
     main()

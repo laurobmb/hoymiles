@@ -10,7 +10,7 @@
 
 ## Build Container
 
-    buildah bud -f Dockerfile -t quay.io/lagomes/hoymiles:v1
+    buildah bud -f Dockerfile -t quay.io/lagomes/hoymiles:refatoranfo_v1
 
 ## Run Container
 
