@@ -22,9 +22,8 @@
        -e CHAT_ID='<chat ID>' \
        -e TOKEN='<token botfather>' \
        -e DEBUG='<valor de 0 para desativado e 1 para ativado>' \
+       -e STATUS_COLETA_LOCAL=True \
        quay.io/lagomes/hoymiles:v1
-
-
 
 # References
 
