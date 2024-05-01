@@ -1,24 +1,35 @@
 from playwright.sync_api import sync_playwright
 from time import sleep
-import os, requests, json
+import os, requests, json, sys
 import logging.config
+
 
 fmt = ('%(asctime)s: %(threadName)s: %(name)s: %(levelname)s: %(message)s')
 logging.basicConfig(format=fmt,level=logging.INFO,datefmt='%H:%M:%S')
 logger = logging.getLogger('hoymiles bot') 
 
+
 def hoymiles(USER,SENHA):
     with sync_playwright() as p:
         browser = p.firefox.launch(headless=True)
         page = browser.new_page()
-        page.goto('https://global.hoymiles.com/platform/login')
-        
+
+        try:
+            web_url='https://global.hoymiles.com/platform/login'
+            page.goto(web_url)
+        except Exception as e:
+            logger.info("ERROR: Erro ao acessar pagina da: {} {}".format(web_url,e))
+            sys.exit()
+
         page.locator('//*[@id="name"]').fill(USER)
         page.locator('//*[@id="password"]').fill(SENHA)
         sleep(2)
         page.locator(".submit_button").click()
         sleep(20)
-        page.screenshot(path='screenshot.png')
+
+        diretorio_corrente = os.path.abspath(os.getcwd())
+        spath=diretorio_corrente + '/' + 'photos/'
+        page.screenshot(path=spath + 'screenshot'+hoymiles_user+'.png')
 
         energy_today_selector = 'li.sx-white-space:nth-child(1) > span:nth-child(3) > b:nth-child(1)'
         page.wait_for_selector(energy_today_selector);
@@ -47,16 +58,35 @@ def hoymiles(USER,SENHA):
         browser.close()
         return energy_today_selector_texto,energy_this_month_selector_texto,energy_this_year_selector_texto,lifetime_energy_selector_texto
 
+
 def telegram_bot_sendphoto(TOKEN,CHAT_ID,caption=None):
     try:
         url = f"https://api.telegram.org/bot{TOKEN}/sendPhoto"
-        photo_path = './screenshot.png'
+
+        diretorio_corrente = os.path.abspath(os.getcwd())
+        spath=diretorio_corrente + '/' + 'photos/'
+        photo_path = spath + 'screenshot' + hoymiles_user + '.png'
+
+        if debug.lower() == "true":
+            print(photo_path)
+
         files = {'photo': open(photo_path, 'rb')}
         data = {'chat_id': CHAT_ID, 'caption': caption}
-        response = requests.post(url, files=files, data=data)
+
+        try:
+            response = requests.post(url, files=files, data=data)
+            print('aqui')
+
+        except Exception as e:
+            logger.info("ERROR ao acessar a API do Telegram: {}".format(e))
+            sys.exit()
+
         logger.info("SUCCESS: Foto enviada http_code: {}".format(response.status_code,))
-    except:
-        logger.info("ERROR: Foto nao enviada http_code: {}".format(response.status_code,))
+
+    except Exception as e:
+        logger.info("ERROR: Foto nao enviada http_code: {} {}".format(response.status_code,e))
+        sys.exit()
+
 
 def telegram_bot_sendtext(TOKEN,CHAT_ID,bot_message,USER,debug,caption=None):
     bot_token = TOKEN
@@ -64,14 +94,14 @@ def telegram_bot_sendtext(TOKEN,CHAT_ID,bot_message,USER,debug,caption=None):
 
     send_url = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message
 
-    if debug == 1:
+    if debug.lower() == "true":
         print(send_url)
 
     response = requests.get(send_url)
     resposta = response.content.decode('UTF-8')
     resposta = json.loads(resposta)
 
-    if debug == 1:
+    if debug.lower() == "true":
         print(resposta)
 
     error_code = resposta['ok']
@@ -83,8 +113,9 @@ def telegram_bot_sendtext(TOKEN,CHAT_ID,bot_message,USER,debug,caption=None):
         logger.info("FAILED: GRUPO: {} USER: {} MESSAGE: {}".format(bot_chatID,USER,bot_message,))
         return 'Error'
 
+
 def hoymiles_local(STATUS):
-    if debug == 1:
+    if debug.lower() == "true":
         print(STATUS)
         print(type(STATUS))
 
@@ -106,6 +137,7 @@ def hoymiles_local(STATUS):
         today_value = 0
         return today_value
 
+
 def main():
     energy_today,energy_this_month,energy_this_year,lifetime_energy = hoymiles(hoymiles_user,hoymiles_pass)
     coleta_local = hoymiles_local(status_coleta_local)
@@ -113,20 +145,22 @@ def main():
     coleta_total_de_hoje = coleta_local + float(energy_today)
 
     try:
-        mensagem = ">>>>>>>> USINA " + hoymiles_user + " <<<<<<<<<\nColeta de hoje: "+energy_today+" Wh"+"\nColeta do mes: "+energy_this_month+" Wh"+"\nColeta do ano: "+energy_this_year+" MWh"+"\nColeta da vida toda: "+lifetime_energy+" MWh"+"\nColeta Local: "+str(coleta_local)+" Wh"+"\n\nColeta total de hoje: "+str(coleta_total_de_hoje)
+        mensagem = ">>>> USINA " + hoymiles_user + " <<<<\nColeta de hoje: "+energy_today+" Wh"+"\nColeta do mes: "+energy_this_month+" Wh"+"\nColeta do ano: "+energy_this_year+" MWh"+"\nColeta da vida toda: "+lifetime_energy+" MWh"+"\nColeta Local: "+str(coleta_local)+" Wh"+"\n\nColeta total de hoje: "+str(coleta_total_de_hoje)
         
         telegram_bot_sendphoto(bot_token,bot_chatID)
+
         telegram_bot_sendtext(bot_token,bot_chatID,mensagem,hoymiles_user,debug)
         
         logger.info("INFO: Usina do usuario {} Coleta de hoje: {} Wh Coleta do mes: {} Wh Coleta do ano: {} MWh Coleta da vida toda: {} MWh Coleta Local: {} Wh Coleta total de hoje: {}".format(hoymiles_user,energy_today,energy_this_month,energy_this_year,lifetime_energy,coleta_local,coleta_total_de_hoje))
 
-    except:
-        logger.info("ERROR: A construcao da mensagem deu errado")
+    except Exception as e:
+        logger.info("ERROR: A construcao da mensagem deu errado: {}".format(e))
+        sys.exit()
 
 
 if __name__ == "__main__":
     versao="v3"
-    print("Coleta de energia do sistema solar <<<<<<<<<<< {}".format(versao))
+    logger.info("INIT: Coleta de energia do sistema solar <<<<<<<<<<< {}".format(versao))    
     hoymiles_user = os.environ['USUARIO']
     hoymiles_pass = os.environ['SENHA']
     bot_token = os.environ['TOKEN']
