@@ -5,7 +5,8 @@ import logging.config
 
 
 fmt = ('%(asctime)s: %(threadName)s: %(name)s: %(levelname)s: %(message)s')
-logging.basicConfig(format=fmt,level=logging.INFO,datefmt='%H:%M:%S')
+#logging.basicConfig(format=fmt,level=logging.INFO,datefmt='%H:%M:%S')
+logging.basicConfig(format=fmt,level=logging.DEBUG,datefmt='%H:%M:%S')
 logger = logging.getLogger('hoymiles bot') 
 
 
@@ -18,7 +19,7 @@ def hoymiles(USER,SENHA):
             web_url='https://global.hoymiles.com/platform/login'
             page.goto(web_url)
         except Exception as e:
-            logger.info("ERROR: Erro ao acessar pagina da: {} {}".format(web_url,e))
+            logger.error("ERROR: Erro ao acessar pagina da: {} {}".format(web_url,e))
             sys.exit()
 
         page.locator('//*[@id="name"]').fill(USER)
@@ -26,7 +27,9 @@ def hoymiles(USER,SENHA):
         sleep(2)
         page.locator(".submit_button").click()
         sleep(20)
-
+        
+        page.set_viewport_size({"width": 1920, "height": 1200})
+        
         diretorio_corrente = os.path.abspath(os.getcwd())
         spath=diretorio_corrente + '/' + 'photos/'
         page.screenshot(path=spath + 'screenshot'+hoymiles_user+'.png')
@@ -67,24 +70,22 @@ def telegram_bot_sendphoto(TOKEN,CHAT_ID,caption=None):
         spath=diretorio_corrente + '/' + 'photos/'
         photo_path = spath + 'screenshot' + hoymiles_user + '.png'
 
-        if debug.lower() == "true":
-            print(photo_path)
+        logger.debug("DEBUG: Show variaveis photo_path: {} url: {}".format(photo_path,url))
 
         files = {'photo': open(photo_path, 'rb')}
         data = {'chat_id': CHAT_ID, 'caption': caption}
 
         try:
             response = requests.post(url, files=files, data=data)
-            print('aqui')
 
         except Exception as e:
-            logger.info("ERROR ao acessar a API do Telegram: {}".format(e))
+            logger.error("ERROR ao acessar a API do Telegram: {}".format(e))
             sys.exit()
 
         logger.info("SUCCESS: Foto enviada http_code: {}".format(response.status_code,))
 
     except Exception as e:
-        logger.info("ERROR: Foto nao enviada http_code: {} {}".format(response.status_code,e))
+        logger.error("ERROR: Foto nao enviada http_code: {} {}".format(response.status_code,e))
         sys.exit()
 
 
@@ -94,15 +95,13 @@ def telegram_bot_sendtext(TOKEN,CHAT_ID,bot_message,USER,debug,caption=None):
 
     send_url = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message
 
-    if debug.lower() == "true":
-        print(send_url)
+    logger.debug("DEBUG: Show variaveis send_url: {}".format(send_url))
 
     response = requests.get(send_url)
     resposta = response.content.decode('UTF-8')
     resposta = json.loads(resposta)
 
-    if debug.lower() == "true":
-        print(resposta)
+    logger.debug("DEBUG: Show variaveis resposta: {}".format(resposta))
 
     error_code = resposta['ok']
 
@@ -110,14 +109,13 @@ def telegram_bot_sendtext(TOKEN,CHAT_ID,bot_message,USER,debug,caption=None):
         logger.info("SUCCESS: GRUPO: {} USER: {} MESSAGE: {}".format(bot_chatID,USER,bot_message,))
         return response.json()     
     else:
-        logger.info("FAILED: GRUPO: {} USER: {} MESSAGE: {}".format(bot_chatID,USER,bot_message,))
+        logger.error("FAILED: GRUPO: {} USER: {} MESSAGE: {}".format(bot_chatID,USER,bot_message,))
         return 'Error'
 
 
 def hoymiles_local(STATUS):
-    if debug.lower() == "true":
-        print(STATUS)
-        print(type(STATUS))
+
+    logger.debug("DEBUG: Show variaveis STATUS: {} {}".format(STATUS,type(STATUS)))
 
     if STATUS.lower() == "true":
         url = "http://192.168.0.107/cm?cmnd=energyyesterday"
@@ -129,7 +127,7 @@ def hoymiles_local(STATUS):
             logger.info("INFO: Coleta do dia: {} Coleta do dia anterior: {}".format(today_value,yesterday_value))
             return today_value
         else:
-            logger.info("FAILED: Coleta do dia: {} Coleta do dia anterior: {}".format(today_value,yesterday_value))
+            logger.error("FAILED: Coleta do dia: {} Coleta do dia anterior: {}".format(today_value,yesterday_value))
             today_value = 0
             return today_value
     else:
@@ -154,18 +152,25 @@ def main():
         logger.info("INFO: Usina do usuario {} Coleta de hoje: {} Wh Coleta do mes: {} Wh Coleta do ano: {} MWh Coleta da vida toda: {} MWh Coleta Local: {} Wh Coleta total de hoje: {}".format(hoymiles_user,energy_today,energy_this_month,energy_this_year,lifetime_energy,coleta_local,coleta_total_de_hoje))
 
     except Exception as e:
-        logger.info("ERROR: A construcao da mensagem deu errado: {}".format(e))
+        logger.error("ERROR: A construcao da mensagem deu errado: {}".format(e))
         sys.exit()
 
 
 if __name__ == "__main__":
+
     versao="v3"
     logger.info("INIT: Coleta de energia do sistema solar <<<<<<<<<<< {}".format(versao))    
+
     hoymiles_user = os.environ['USUARIO']
     hoymiles_pass = os.environ['SENHA']
     bot_token = os.environ['TOKEN']
     bot_chatID = os.environ['CHAT_ID']
-    debug = os.environ['DEBUG']
     status_coleta_local = os.environ['STATUS_COLETA_LOCAL']
+    try:
+        debug = os.environ['DEBUG']
+    except:
+        debug = 0
+
+    logger.debug("DEBUG: Show variaveis {} {} {} {} {} {}".format(hoymiles_user,hoymiles_pass,bot_token,bot_chatID,debug,status_coleta_local))
 
     main()
