@@ -347,7 +347,7 @@ def hoymiles_giba(update, context):
 
 def main():
     #@laurobmb
-    TOKEN='1146948596:AAFxLoSSPIVOqZo-39o6UiLK9sMGlmWu4TA'
+    TOKEN=''
     updater = Updater(TOKEN, use_context=True)
     updater.dispatcher.add_handler(CommandHandler('start', start))
 
